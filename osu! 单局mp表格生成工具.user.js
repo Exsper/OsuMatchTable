@@ -3,6 +3,7 @@
 // @namespace    https://github.com/Exsper/
 // @version      1.0
 // @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
+// @supportURL   https://github.com/Exsper/OsuMatchTable/issues
 // @author       Exsper
 // @match        https://osu.ppy.sh/community/matches/*
 // @grant        none
@@ -51,7 +52,7 @@ function GetMods($mods){
 // 获取比赛页面上的所有数据
 function GetMatchData(){
     var matchData = {};
-    matchData.mpTitle = $(".osu-page-header__title").text();
+    matchData.mpTitle = $(".osu-page-header__title:not(.osu-page-header__title--small)").text();
     matchData.matches = [];
     var $matches = $(".mp-history-events__game");
     $.each($matches, function(i, match){
@@ -113,7 +114,7 @@ function GetMatchData(){
             }
             var $gameTeamResults = $(".mp-history-game__results", $game);
             if ($gameTeamResults.length > 0){
-                gameData.gameResult.resultText = $(".mp-history-game__results-text", $gameTeamResults)[0].innerText;
+                gameData.gameResult.resultText = $(".mp-history-game__results-text:not(.mp-history-game__results-text--score)", $gameTeamResults).text();
                 gameData.gameResult.resultTextScore = $(".mp-history-game__results-text--score", $gameTeamResults).text();
             }
             matchData.matches.push(gameData);
@@ -199,14 +200,15 @@ function CreateTable(){
     var matchData = GetMatchData();
     var container = $("<div>", {id:"matchDataTable", style:"text-align:center;"}).appendTo(".mp-history-events");
     $("<p style='margin-top:100px; font-size:32px;'>" + matchData.mpTitle + "</p>").appendTo(container);
-    for(var i = 0; i < matchData.matches.length; ++i){
-        CreateRoundTable(i+1, matchData.matches[i], container);
-    }
 
     var outputCountryResultAsExcel = $('<button type="button">导出</button>').appendTo(container);
     outputCountryResultAsExcel.click(function() {
         tableToExcel("matchDataTable");
     });
+
+    for(var i = 0; i < matchData.matches.length; ++i){
+        CreateRoundTable(i+1, matchData.matches[i], container);
+    }
 }
 
 
