@@ -2,7 +2,7 @@
 // @name         osu! 单局mp表格生成工具
 // @namespace    https://github.com/Exsper/
 // @version      1.0
-// @description  一个简单的表格生成工具，获取单局mp网页上的数据并在网页底部生成表格
+// @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
 // @author       Exsper
 // @match        https://osu.ppy.sh/community/matches/*
 // @grant        none
@@ -87,6 +87,7 @@ function GetMatchData(){
                 scoreData.teamColor = style.slice(teamColorStringStart, teamColorStringEnd); //blue, red, none
                 scoreData.player = $(".mp-history-player-score__username", score).text();
                 scoreData.playerLink = location.origin + $(".mp-history-player-score__username", score).attr("href");
+                scoreData.isFailed = ($(".mp-history-player-score__failed", score).length > 0);
                 scoreData.playerCountry = $(".flag-country", score).attr("title");
                 var $playerMods = $(".mp-history-player-score__mods-box", score);
                 scoreData.playerMods = GetMods($playerMods);
@@ -161,7 +162,7 @@ function CreateRoundTable(roundId, oneMatchData, container){
     var mapScoreTableThead = $("<thead>").appendTo(mapScoreTable);
     var mapScoreTableTbody = $("<tbody>").appendTo(mapScoreTable);
     //标题行
-    var mapScoreTableTheadTr = $("<tr>",{id:"CBCCountryResultTheadTr", style:"background-color:#c5ffbb;"}).appendTo(mapScoreTableThead);
+    var mapScoreTableTheadTr = $("<tr>",{style:"background-color:#c5ffbb;"}).appendTo(mapScoreTableThead);
     $("<td>", {text:"团队", "class":"mapScoreTable-Team"}).appendTo(mapScoreTableTheadTr);
     $("<td>", {text:"玩家", "class":"mapScoreTable-Player"}).appendTo(mapScoreTableTheadTr);
     $("<td>", {text:"国家", "class":"mapScoreTable-Country"}).appendTo(mapScoreTableTheadTr);
@@ -173,7 +174,8 @@ function CreateRoundTable(roundId, oneMatchData, container){
     for(var i = 0; i < oneMatchData.scoreInfo.length; ++i){
         if (hideZeroScore && (oneMatchData.scoreInfo[i].playerScore <= 0)) continue;
         tr = $("<tr>").appendTo(mapScoreTableTbody);
-        if (oneMatchData.scoreInfo[i].teamColor == "red") tr.css("background-color","#ffd5dd");
+        if (oneMatchData.scoreInfo[i].isFailed) tr.css("background-color","#ff2525");
+        else if (oneMatchData.scoreInfo[i].teamColor == "red") tr.css("background-color","#ffd5dd");
         else if (oneMatchData.scoreInfo[i].teamColor == "blue") tr.css("background-color","#bfdcf5");
         $("<td>" + oneMatchData.scoreInfo[i].teamColor + "</td>").appendTo(tr);
         $('<td><a href="' + oneMatchData.scoreInfo[i].playerLink + '" target="_blank">' + oneMatchData.scoreInfo[i].player + '</a></td>').appendTo(tr);
