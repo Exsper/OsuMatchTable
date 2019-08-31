@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         osu! 单局mp表格生成工具
-// @namespace    https://github.com/Exsper/
-// @version      1.0
+// @namespace    https://github.com/Exsper/OsuMatchTable
+// @version      1.0.1
 // @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
 // @supportURL   https://github.com/Exsper/OsuMatchTable/issues
 // @author       Exsper
@@ -211,8 +211,6 @@ function CreateTable(){
     }
 }
 
-
-
 //导出为excel
 var tableToExcel = (function() {
     var uri = 'data:application/vnd.ms-excel;base64,',
@@ -229,9 +227,25 @@ var tableToExcel = (function() {
 })();
 
 
+function showFullHistory(){
+    // 显示全部记录
+    function checkFullHistory() {
+        if ($(".mp-history-content__show-more-box").length > 0){
+            if ($(".mp-history-content__show-more").length > 0){
+                $(".mp-history-content__show-more").click();
+            }
+            setTimeout(checkFullHistory, 100);
+        }
+        else {
+            CreateTable();
+        }
+    }
+
+    checkFullHistory();
+}
 
 
 window.onload = function(){
-    CreateTable();
+    showFullHistory();
 }
 
