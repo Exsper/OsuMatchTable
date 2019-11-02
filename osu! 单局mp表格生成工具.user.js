@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         osu! 单局mp表格生成工具
 // @namespace    https://github.com/Exsper/OsuMatchTable
-// @version      1.0.1
+// @version      1.0.2
 // @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
 // @supportURL   https://github.com/Exsper/OsuMatchTable/issues
 // @author       Exsper
@@ -64,7 +64,7 @@ function GetMatchData(){
             // 单局比赛信息
             gameData.gameInfo = {};
             var $gameHeader = $(".mp-history-game__header", $game);
-            gameData.gameInfo.mapLink = location.origin + $gameHeader.attr("href");
+            gameData.gameInfo.mapLink = $gameHeader.attr("href");
             var $gameStats = $(".mp-history-game__stats-box", $gameHeader).children(".mp-history-game__stat");
             gameData.gameInfo.timeSpan = $gameStats[0].innerText;
             gameData.gameInfo.gameMode = $gameStats[1].innerText;
@@ -87,7 +87,7 @@ function GetMatchData(){
                 var teamColorStringEnd = style.indexOf(".svg");
                 scoreData.teamColor = style.slice(teamColorStringStart, teamColorStringEnd); //blue, red, none
                 scoreData.player = $(".mp-history-player-score__username", score).text();
-                scoreData.playerLink = location.origin + $(".mp-history-player-score__username", score).attr("href");
+                scoreData.playerLink = $(".mp-history-player-score__username", score).attr("href");
                 scoreData.isFailed = ($(".mp-history-player-score__failed", score).length > 0);
                 scoreData.playerCountry = $(".flag-country", score).attr("title");
                 var $playerMods = $(".mp-history-player-score__mods-box", score);
@@ -198,7 +198,7 @@ function CreateRoundTable(roundId, oneMatchData, container){
 
 function CreateTable(){
     var matchData = GetMatchData();
-    var container = $("<div>", {id:"matchDataTable", style:"text-align:center;"}).appendTo(".mp-history-events");
+    var container = $("<div>", {id:"matchDataTable", style:"text-align:center;background:#FFF"}).appendTo(".mp-history-events");
     $("<p style='margin-top:100px; font-size:32px;'>" + matchData.mpTitle + "</p>").appendTo(container);
 
     var outputCountryResultAsExcel = $('<button type="button">导出</button>').appendTo(container);
@@ -230,6 +230,8 @@ var tableToExcel = (function() {
 function showFullHistory(){
     // 显示全部记录
     function checkFullHistory() {
+        CreateTable();
+        /*
         if ($(".mp-history-content__show-more-box").length > 0){
             if ($(".mp-history-content__show-more").length > 0){
                 $(".mp-history-content__show-more").click();
@@ -239,6 +241,7 @@ function showFullHistory(){
         else {
             CreateTable();
         }
+        */
     }
 
     checkFullHistory();
