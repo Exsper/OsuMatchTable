@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         osu! 单局mp表格生成工具
 // @namespace    https://github.com/Exsper/OsuMatchTable
-// @version      1.0.3
+// @version      1.1.0
 // @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
 // @supportURL   https://github.com/Exsper/OsuMatchTable/issues
 // @author       Exsper
+// @require      https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js
 // @match        https://osu.ppy.sh/community/matches/*
-// @grant        none
+// @run-at       context-menu
 // ==/UserScript==
 
-
-var $ = window.$;
+var $ = window.$
 
 //隐藏0分成绩
 var hideZeroScore = true;
@@ -52,9 +52,9 @@ function GetMods($mods){
 // 获取比赛页面上的所有数据
 function GetMatchData(){
     var matchData = {};
-    matchData.mpTitle = $(".osu-page-header__title:not(.osu-page-header__title--small)").text();
+    matchData.mpTitle = $(".mp-history-content__item")[0].innerText;
     matchData.matches = [];
-    var $matches = $(".mp-history-events__game");
+    var $matches = $(".mp-history-content__item:not(.mp-history-content__item--event)");
     $.each($matches, function(i, match){
         var $game = $(".mp-history-game", match);
         if ($game.length <= 0) return true;
@@ -72,7 +72,7 @@ function GetMatchData(){
             var $gameMetadata = $(".mp-history-game__metadata-box", $gameHeader);
             gameData.gameInfo.mapTitle = $gameMetadata.children(".mp-history-game__metadata--title").text();
             gameData.gameInfo.artist = $gameMetadata.children(".mp-history-game__metadata--artist").text();
-            var $gameMods = $(".mp-history-game__mods", $gameHeader);
+            var $gameMods = $(".mp-history-game__mods-box", $gameHeader);
             gameData.gameInfo.mapMod = GetMods($gameMods);
             var $gameTeamType = $(".mp-history-game__team-type", $gameHeader);
             gameData.gameInfo.teamType = $gameTeamType.attr("title");
@@ -163,7 +163,7 @@ function CreateRoundTable(roundId, oneMatchData, container){
     var mapScoreTableThead = $("<thead>").appendTo(mapScoreTable);
     var mapScoreTableTbody = $("<tbody>").appendTo(mapScoreTable);
     //标题行
-    var mapScoreTableTheadTr = $("<tr>",{style:"background-color: #805f86;"}).appendTo(mapScoreTableThead);
+    var mapScoreTableTheadTr = $("<tr>",{style:"background-color:#c5ffbb;"}).appendTo(mapScoreTableThead);
     $("<td>", {text:"团队", "class":"mapScoreTable-Team"}).appendTo(mapScoreTableTheadTr);
     $("<td>", {text:"玩家", "class":"mapScoreTable-Player"}).appendTo(mapScoreTableTheadTr);
     $("<td>", {text:"国家", "class":"mapScoreTable-Country"}).appendTo(mapScoreTableTheadTr);
@@ -198,10 +198,10 @@ function CreateRoundTable(roundId, oneMatchData, container){
 
 function CreateTable(){
     var matchData = GetMatchData();
-    var container = $("<div>", {id:"matchDataTable", style:"text-align:center"}).appendTo(".mp-history-events");
+    var container = $("<div>", {id:"matchDataTable", style:"text-align:center;background:#000"}).appendTo($(".mp-history-content"));
     $("<p style='margin-top:100px; font-size:32px;'>" + matchData.mpTitle + "</p>").appendTo(container);
 
-    var outputCountryResultAsExcel = $('<button type="button" style="color: #000">导出</button>').appendTo(container);
+    var outputCountryResultAsExcel = $('<button type="button">导出</button>').appendTo(container);
     outputCountryResultAsExcel.click(function() {
         tableToExcel("matchDataTable");
     });
@@ -228,27 +228,11 @@ var tableToExcel = (function() {
 
 
 function showFullHistory(){
-    // 显示全部记录
-    function checkFullHistory() {
-        CreateTable();
-        /*
-        if ($(".mp-history-content__show-more-box").length > 0){
-            if ($(".mp-history-content__show-more").length > 0){
-                $(".mp-history-content__show-more").click();
-            }
-            setTimeout(checkFullHistory, 100);
-        }
-        else {
-            CreateTable();
-        }
-        */
-    }
-
-    checkFullHistory();
+    CreateTable();
 }
 
 
-window.onload = function(){
+$(document).ready(() => {
     showFullHistory();
-}
+});
 
