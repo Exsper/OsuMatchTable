@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         osu! 单局mp表格生成工具
 // @namespace    https://github.com/Exsper/OsuMatchTable
-// @version      1.1.0
+// @version      1.1.1
 // @description  一个简单的表格生成工具，获取单局mp网页上的数据并生成表格
 // @supportURL   https://github.com/Exsper/OsuMatchTable/issues
 // @author       Exsper
@@ -90,7 +90,7 @@ function GetMatchData(){
                 scoreData.playerLink = $(".mp-history-player-score__username", score).attr("href");
                 scoreData.isFailed = ($(".mp-history-player-score__failed", score).length > 0);
                 scoreData.playerCountry = $(".flag-country", score).attr("title");
-                var $playerMods = $(".mp-history-player-score__mods-box", score);
+                var $playerMods = $(".mp-history-player-score__mods", score);
                 scoreData.playerMods = GetMods($playerMods);
                 var $playerCombo = $(".mp-history-player-score__stat--combo", score);
                 scoreData.playerCombo = parseInt($playerCombo.children(".mp-history-player-score__stat-number").text().replace(/,/g, ''));
